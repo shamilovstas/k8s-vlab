@@ -1,0 +1,9 @@
+#- name: disable swap on k8s nodes for this session
+#  become: true
+#  command: swapoff -a
+#
+#- name: disable swap on k8s nodes permanently
+#  replace:
+#    path: /etc/fstab
+#    regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+#    replace: '# \1'
