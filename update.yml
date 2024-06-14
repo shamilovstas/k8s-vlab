@@ -1,0 +1,10 @@
+---
+- hosts: all
+  become: true
+  pre_tasks:
+    
+    - name: install updates
+      tags: always
+      apt:
+        upgrade: dist
+        update_cache: yes
