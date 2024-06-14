@@ -2,12 +2,13 @@
 - hosts: all
   become: true
   
-  tasks:
-    - name: update index
-      tags: always
-      apt:
-        update_cache: yes
-      chenged_when: false
+  pre_tasks:
+
+  - name: update index
+    tags: always
+    apt:
+      update_cache: yes
+    changed_when: false
 
 - hosts: all
   become: true
