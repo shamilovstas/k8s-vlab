@@ -1,0 +1,25 @@
+---
+- hosts: all
+  become: true
+  
+  tasks:
+    - name: update index
+      tags: always
+      apt:
+        update_cache: yes
+      chenged_when: false
+
+- hosts: all
+  become: true
+  roles:
+    - base
+
+- hosts: cluster_node
+  become: true
+  roles:
+    - nodes
+
+- hosts: master
+  become: true
+  roles:
+    - master

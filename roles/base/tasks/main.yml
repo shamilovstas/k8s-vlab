@@ -1,0 +1,4 @@
+- name: set timezone
+  tags: tz
+  community.general.timezone:
+    name: Europe/Kyiv
