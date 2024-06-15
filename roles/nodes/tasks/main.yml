@@ -8,15 +8,15 @@
       - gpg
     state: latest
 
-#- name: disable swap on k8s nodes for this session
-#  become: true
-#  command: swapoff -a
-#
-#- name: disable swap on k8s nodes permanently
-#  replace:
-#    path: /etc/fstab
-#    regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
-#    replace: '# \1'
+- name: disable swap on k8s nodes for this session
+  become: true
+  command: swapoff -a
+
+- name: disable swap on k8s nodes permanently
+  replace:
+    path: /etc/fstab
+    regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+    replace: '# \1'
 
 - name: Add k8s repository
   block:
@@ -45,8 +45,7 @@
 
 - name: Hold k8s deps
   shell: apt-mark hold kubelet kubeadm kubectl
-  register: hold
-  changed_when: hold.stdout != 'HOLDED'
+  changed_when: false
 
 - name: start kubelet
   service:
