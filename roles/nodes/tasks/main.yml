@@ -6,6 +6,7 @@
       - apt-transport-https
       - ca-certificates
       - gpg
+      - software-properties-common
     state: latest
 
 - name: disable swap on k8s nodes for this session
@@ -17,6 +18,28 @@
     path: /etc/fstab
     regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
     replace: '# \1'
+
+- name: Add CRIO repository
+  block:
+
+    - name: Download cri-o signing key
+      get_url:
+        url: https://pkgs.k8s.io/addons:/cri-o:/prerelease:/main/deb/Release.key
+        dest: /etc/apt/keyrings/crio.gpg_armored
+
+    - name: De-Armor crio key
+      shell: "gpg --dearmor < /etc/apt/keyrings/crio.gpg_armored > /etc/apt/keyrings/crio.gpg"
+      args:
+        creates: /etc/apt/keyrings/crio.gpg
+
+    - name: Add crio repository
+      apt_repository: 
+        repo: "deb [signed-by=/etc/apt/keyrings/crio.gpg] https://pkgs.k8s.io/addons:/cri-o:/prerelease:/main/deb/ /"
+
+- name: Install cri-o
+  apt:
+    name: cri-o
+    state: present
 
 - name: Add k8s repository
   block:
@@ -40,12 +63,17 @@
     name: 
       - kubelet
       - kubeadm
-      - kubectl
     state: present
 
 - name: Hold k8s deps
-  shell: apt-mark hold kubelet kubeadm kubectl
+  shell: apt-mark hold kubelet kubeadm
   changed_when: false
+
+- name: start crio service
+  service:
+    name: crio
+    state: started
+    enabled: yes
 
 - name: start kubelet
   service:

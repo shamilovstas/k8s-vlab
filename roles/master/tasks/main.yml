@@ -1,0 +1,8 @@
+- name: Install kubectl
+  apt:
+    name: kubectl
+    state: present
+
+- name: Hold k8s deps
+  shell: apt-mark hold kubectl 
+  changed_when: false
