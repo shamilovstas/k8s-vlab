@@ -12,6 +12,7 @@
 - name: disable swap on k8s nodes for this session
   become: true
   command: swapoff -a
+  changed_when: false
 
 - name: disable swap on k8s nodes permanently
   replace:
