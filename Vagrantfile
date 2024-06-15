@@ -12,14 +12,19 @@ Vagrant.configure("2") do |config|
 
     config.vm.define "server" do |server|
         server.vm.hostname = "server.local"
-        server.vm.network :private_network, ip: "192.168.60.4"
+        server.vm.network :private_network, ip: "192.168.60.4", netmask: "25"
+
+        server.vm.provider "virtualbox" do |vb|
+            vb.memory=2048
+            vb.cpus = 2
+        end
     end
 
     NODE_COUNT = 3
     (1..NODE_COUNT).each do |node_id|
         config.vm.define "client#{node_id}" do |node|
            node.vm.hostname = "client#{node_id}.local"
-           node.vm.network :private_network, ip: "192.168.60.#{30+node_id}"
+           node.vm.network :private_network, ip: "192.168.60.#{30+node_id}", netmask: "25"
 
             if node_id == NODE_COUNT
                 node.vm.provision :ansible do |ansible|
