@@ -15,7 +15,7 @@ Vagrant.configure("2") do |config|
         server.vm.network :private_network, ip: "192.168.60.4"
     end
 
-    NODE_COUNT = 4
+    NODE_COUNT = 3
     (1..NODE_COUNT).each do |node_id|
         config.vm.define "client#{node_id}" do |node|
            node.vm.hostname = "client#{node_id}.local"
@@ -26,7 +26,7 @@ Vagrant.configure("2") do |config|
                      ansible.limit = "all"
                      ansible.playbook = "playbook.yml"
                      ansible.groups = {
-                         "cluster_node" => ["client[1:3]", "server"],
+                         "cluster_node" => ["client[1:#{NODE_COUNT}]", "server"],
                          "master" => ["server"]
                      }
                 end
