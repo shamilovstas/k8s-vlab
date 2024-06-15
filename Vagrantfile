@@ -26,7 +26,7 @@ Vagrant.configure("2") do |config|
                      ansible.limit = "all"
                      ansible.playbook = "playbook.yml"
                      ansible.groups = {
-                         "cluster_node" => ["client[1:3]"],
+                         "cluster_node" => ["client[1:3]", "server"],
                          "master" => ["server"]
                      }
                 end
