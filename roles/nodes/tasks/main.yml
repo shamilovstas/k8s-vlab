@@ -3,6 +3,9 @@
 
     name:
       - curl
+      - apt-transport-https
+      - ca-certificates
+      - gpg
     state: latest
 
 #- name: disable swap on k8s nodes for this session
@@ -14,3 +17,39 @@
 #    path: /etc/fstab
 #    regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
 #    replace: '# \1'
+
+- name: Add k8s repository
+  block:
+
+    - name: Download k8s signing key
+      get_url:
+        url: https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key
+        dest: /etc/apt/keyrings/kubernetes-apt-keyring.gpg_armored
+    
+    - name: De-Armor k8s key
+      shell: "gpg --dearmor < /etc/apt/keyrings/kubernetes-apt-keyring.gpg_armored > /etc/apt/keyrings/kubernetes-apt-keyring.gpg"
+      args:
+        creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+    - name: Add repository
+      apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /"
+
+- name: Install k8s dependencies
+  apt:
+    name: 
+      - kubelet
+      - kubeadm
+      - kubectl
+    state: present
+
+- name: Hold k8s deps
+  shell: apt-mark hold kubelet kubeadm kubectl
+  register: hold
+  changed_when: hold.stdout != 'HOLDED'
+
+- name: start kubelet
+  service:
+    name: kubelet
+    state: started
+    enabled: yes
