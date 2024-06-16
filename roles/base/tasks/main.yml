@@ -2,3 +2,7 @@
   tags: tz
   community.general.timezone:
     name: Europe/Kyiv
+
+- name: reset k8s cluster
+  tags: [ 'never', 'cleanup']
+  shell: yes | kubeadm reset
