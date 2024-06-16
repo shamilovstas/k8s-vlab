@@ -34,6 +34,7 @@ Vagrant.configure("2") do |config|
                          "cluster_node" => ["client[1:#{NODE_COUNT}]", "server"],
                          "master" => ["server"]
                      }
+                     ansible.raw_arguments = Shellwords.shellsplit(ENV['ANSIBLE_ARGS']) if ENV['ANSIBLE_ARGS']
                 end
             end
         end
