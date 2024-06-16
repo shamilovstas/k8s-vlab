@@ -6,3 +6,28 @@
 - name: Hold k8s deps
   shell: apt-mark hold kubectl 
   changed_when: false
+
+- name: Check for k8s control plane files
+  stat:
+    path: /etc/kubernetes/manifests/kube-apiserver.yaml
+  register: k8scp
+
+- name: Initialize k8s cluster
+  shell: "kubeadm init --apiserver-advertise-address 192.168.60.4 --apiserver-cert-extra-sans 192.168.60.4 --pod-network-cidr 192.168.70.0/24 --node-name server --token abcdef.1212121212121212 "
+  args:
+    chdir: $HOME
+    creates: cluster_initialized.txt
+  when: not k8scp.stat.exists
+
+
+- name: create .kube directory
+  file:
+    path: $HOME/.kube
+    state: directory
+    mode: 0755
+
+- name: copy admin.conf
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: $HOME/.kube/config
+    remote_src: yes

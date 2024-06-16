@@ -89,3 +89,12 @@
     sysctl_set: true
     state: present
     reload: true
+
+- name: Check for kubelet config
+  stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: kubeletconf
+
+- name: Join cluster
+  shell: kubeadm join 192.168.60.4:6443 --token abcdef.1212121212121212 --discovery-token-unsafe-skip-ca-verification 
+  when: not kubeletconf.stat.exists

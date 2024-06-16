@@ -15,12 +15,12 @@
   roles:
     - base
 
-- hosts: cluster_node
-  become: true
-  roles:
-    - nodes
-
 - hosts: master
   become: true
   roles:
     - master
+
+- hosts: cluster_node
+  become: true
+  roles:
+    - nodes
